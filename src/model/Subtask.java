@@ -1,7 +1,5 @@
 package model;
 
-import status.Status;
-
 public class Subtask extends Task {
 
     private final int epicId;
@@ -9,8 +7,8 @@ public class Subtask extends Task {
     public Subtask(String name, String description, Status status, Epic epic) {
         super(name, description, status);
         this.epicId = epic.getId();
-        epic.addSubtask(this);
         System.out.println("ID эпика: " + epic.getId());
+        System.out.println();
     }
 
     @Override
@@ -26,10 +24,5 @@ public class Subtask extends Task {
 
     public int getEpicId() {
         return epicId;
-    }
-
-    @Override
-    public void setStatus(Status status) {
-
     }
 }

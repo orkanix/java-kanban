@@ -1,7 +1,5 @@
 package model;
 
-import status.Status;
-
 import java.util.ArrayList;
 
 public class Epic extends Task {
@@ -18,6 +16,14 @@ public class Epic extends Task {
 
     public void addSubtask(Subtask subtask) {
         subtasksId.add(subtask.getId());
+    }
+
+    public ArrayList<Integer> getSubtasksId() {
+        return subtasksId;
+    }
+
+    public void deleteSubtask(Subtask subtask) {
+        subtasksId.removeIf(i -> subtask.getId() == i);
     }
 
     @Override

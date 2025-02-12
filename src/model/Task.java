@@ -1,7 +1,5 @@
 package model;
 
-import status.Status;
-
 import java.util.Objects;
 
 public class Task {
@@ -17,6 +15,7 @@ public class Task {
         this.status = status;
 
         System.out.println("Задача " + name + " создана!");
+        System.out.println();
     }
 
     public Task(String name, String description, Status status, int id) {
@@ -69,14 +68,19 @@ public class Task {
         if (this.getClass() != obj.getClass()) return false;
 
         Task tempTask = (Task) obj;
-        return Objects.equals(name, tempTask.name) &&
-                Objects.equals(description, tempTask.description) &&
-                Objects.equals(id, tempTask.id) &&
-                Objects.equals(status, tempTask.status);
+        return Objects.equals(id, tempTask.id);
     }
 
     @Override
     public int hashCode() {
-        return  Objects.hash(name, description, id, status);
+        return  Objects.hash(id);
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

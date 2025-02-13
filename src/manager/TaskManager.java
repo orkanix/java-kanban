@@ -49,11 +49,6 @@ public class TaskManager {
             }
         }
 
-        if (tempList.isEmpty()) {
-            System.out.println("Подзадачи для эпика с id " + epicId + " не найдены.");
-            return new ArrayList<>();
-        }
-
         return tempList;
     }
 
@@ -74,15 +69,17 @@ public class TaskManager {
     }
 
     public int addNewSubtask(Subtask subtask) {
-        if (getEpic(subtask.getEpicId()) == null) {
+        Epic tempEpic = getEpic(subtask.getEpicId());
+
+        if (tempEpic == null) {
             System.out.println("Эпика с id " + subtask.getEpicId() + " для подзадачи не существует");
             return -1;
         }
 
         subtask.setId(id);
         subtasks.put(id, subtask);
-        getEpic(subtask.getEpicId()).getSubtasksId().add(subtask.getId());
-        checkStatus(getEpic(subtask.getEpicId()));
+        tempEpic.getSubtasksId().add(subtask.getId());
+        checkStatus(tempEpic);
         id++;
 
         return id - 1;
@@ -100,7 +97,11 @@ public class TaskManager {
 
     public void updateEpic(Epic epic) {
         if (epics.containsKey(epic.getId())) {
-            epics.put(epic.getId(), epic);
+            Epic epicInMemory = epics.get(epic.getId());
+            epicInMemory.setName(epic.getName());
+            epicInMemory.setDescription(epic.getDescription());
+            epics.put(epic.getId(), epicInMemory);
+
             System.out.println("Эпик с id " + epic.getId() + " обновлен.");
             return;
         }
@@ -108,16 +109,20 @@ public class TaskManager {
         System.out.println("Эпик с id " + epic.getId() + " не найден.");
     }
 
-    public void updateSubtask(Subtask subtask) {
-        if (subtasks.containsKey(subtask.getId())) {
-            subtasks.put(subtask.getId(), subtask);
+    public void updateSubtask(Subtask subtask, int id) {
+        if (subtasks.containsKey(id)) {
+            subtask.setId(id);
+            subtasks.put(id, subtask);
             checkStatus(getEpic(subtask.getEpicId()));
-            System.out.println("Подзадача с id " + subtask.getId() + " обновлена.");
+            System.out.println("Подзадача с id " + id + " обновлена.");
+            System.out.println(subtasks);
             return;
         }
 
+
         System.out.println("Подзадача с id " + subtask.getId() + " не найдена.");
     }
+
 
     public void deleteTask(Task task) {
         if (tasks.containsKey(task.getId())) {
@@ -130,15 +135,8 @@ public class TaskManager {
     }
 
     public void deleteEpic(Epic epic) {
-        ArrayList<Integer> keysToRemove = new ArrayList<>();
         if (epics.containsKey(epic.getId())) {
-            for (Integer i : subtasks.keySet()) {
-                if (epic.getSubtasksId().contains(i)) {
-                    keysToRemove.add(i);
-                }
-            }
-
-            for (Integer key : keysToRemove) {
+            for (Integer key : epic.getSubtasksId()) {
                 subtasks.remove(key);
             }
 
@@ -154,7 +152,6 @@ public class TaskManager {
         if (subtasks.containsKey(subtask.getId())) {
             getEpic(subtask.getEpicId()).deleteSubtask(subtask);
             subtasks.remove(subtask.getId());
-            System.out.println("Подзадача с id " + subtask.getId() + " удалена.");
             checkStatus(getEpic(subtask.getEpicId()));
             return;
         }
@@ -164,13 +161,11 @@ public class TaskManager {
 
     public void deleteTasks() {
         tasks.clear();
-        System.out.println("Все задачи удалены.");
     }
 
     public void deleteEpics() {
         epics.clear();
         subtasks.clear();
-        System.out.println("Все эпики удалены");
     }
 
     public void deleteSubtasks() {
@@ -179,16 +174,7 @@ public class TaskManager {
             epic.getSubtasksId().clear();
             checkStatus(epic);
         }
-        System.out.println("Все подзадачи удалены.");
     }
-
-    public void setStatus(Subtask subtask, Status status) {
-        subtask.setStatus(status);
-        checkStatus(getEpic(subtask.getEpicId()));
-        System.out.println("Успешная смена статуса на: " + status);
-    }
-
-
 
     private void checkStatus(Epic epic) {
         ArrayList<Subtask> tempList = getEpicSubtasks(epic.getId());

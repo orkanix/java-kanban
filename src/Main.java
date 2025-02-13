@@ -37,7 +37,7 @@ public class Main {
         System.out.println(taskManager.getEpics());
         System.out.println(taskManager.getSubtasks());
 
-        taskManager.setStatus(subtask1FE1, Status.DONE);
+        taskManager.updateSubtask(new Subtask("обновленный сабтаск 1 для эпика 1", "описание сабтаска", Status.DONE, epic1), 5);
 
         System.out.println();
         System.out.println(subtask1FE1.getStatus());

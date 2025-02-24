@@ -7,8 +7,6 @@ public class Subtask extends Task {
     public Subtask(String name, String description, Status status, Epic epic) {
         super(name, description, status);
         this.epicId = epic.getId();
-        System.out.println("ID эпика: " + epic.getId());
-        System.out.println();
     }
 
     @Override

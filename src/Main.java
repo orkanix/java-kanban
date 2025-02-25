@@ -1,4 +1,3 @@
-import manager.HistoryManager;
 import manager.Managers;
 import manager.TaskManager;
 import model.Epic;
@@ -12,7 +11,6 @@ public class Main {
         System.out.println("Поехали!");
 
         TaskManager taskManager = Managers.getDefault();
-        HistoryManager historyManager = Managers.getDefaultHistory();
 
         Task task1 = new Task("задача 1", "описание задачи 1", Status.NEW);
         Task task2 = new Task("задача 2", "описание задачи 2", Status.NEW);
@@ -73,10 +71,7 @@ public class Main {
 
         taskManager.deleteSubtasks();
 
-        historyManager.add(task1);
-        historyManager.add(task2);
-        historyManager.add(task1);
-        System.out.println(historyManager.getHistory());
+        System.out.println(taskManager.getHistory());
     }
 
 }

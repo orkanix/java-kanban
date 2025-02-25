@@ -19,13 +19,13 @@ class EpicTest {
     @Test
     public void correctAdditionOfSubtask() {
         epic1.addSubtask(subtask1);
-        assertTrue(epic1.getId() == subtask1.getEpicId());
+        assertEquals(epic1.getId(), subtask1.getEpicId());
     }
 
     @Test
     public void correctRemovalOfSubtask() {
         epic1.addSubtask(subtask1);
-        assertTrue(epic1.getId() == subtask1.getEpicId());
+        assertEquals(epic1.getId(), subtask1.getEpicId());
 
         epic1.deleteSubtask(subtask1);
         assertFalse(epic1.getSubtasksId().contains(subtask1.getId()));

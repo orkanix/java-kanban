@@ -1,5 +1,6 @@
 package manager;
 
+import manager.task.TaskManager;
 import model.Epic;
 import model.Status;
 import model.Subtask;
@@ -89,9 +90,6 @@ class InMemoryTaskManagerTest {
         Subtask subtask11 = new Subtask("Сабтаск", "Описание сабтаска", Status.NEW, epic1);
         Subtask subtask12 = new Subtask("Сабтаск", "Описание сабтаска", Status.NEW, epic1);
 
-        epic1.addSubtask(subtask11);
-        epic1.addSubtask(subtask12);
-
         taskManager.addNewEpic(epic1);
         taskManager.addNewSubtask(subtask11);
         taskManager.addNewSubtask(subtask12);
@@ -105,14 +103,44 @@ class InMemoryTaskManagerTest {
         Subtask subtask11 = new Subtask("Сабтаск", "Описание сабтаска", Status.NEW, epic1);
         Subtask subtask12 = new Subtask("Сабтаск", "Описание сабтаска", Status.NEW, epic1);
 
-        epic1.addSubtask(subtask11);
-        epic1.addSubtask(subtask12);
-
         taskManager.addNewEpic(epic1);
         taskManager.addNewSubtask(subtask11);
         taskManager.addNewSubtask(subtask12);
         taskManager.updateSubtask(new Subtask("обновленный сабтаск 1 для эпика 1", "описание сабтаска", Status.DONE, epic1), 2);
         taskManager.updateSubtask(new Subtask("обновленный сабтаск 2 для эпика 1", "описание сабтаска", Status.DONE, epic1), 3);
         assertEquals(Status.DONE, epic1.getStatus(), "Неверно определен статус у эпика!");
+    }
+
+    @Test
+    public void clearingTheIDsOfDeletedSubtasks() {
+        Epic epic1 = new Epic("Эпик", "Описание эпика", Status.NEW, 1);
+        Subtask subtask1 = new Subtask("Сабтаск", "Описание сабтаска", Status.NEW, epic1);
+        Subtask subtask2 = new Subtask("Сабтаск", "Описание сабтаска", Status.NEW, epic1);
+
+        taskManager.addNewEpic(epic1);
+        taskManager.addNewSubtask(subtask1);
+        taskManager.addNewSubtask(subtask2);
+
+        taskManager.deleteSubtask(subtask1);
+
+        assertEquals(-1, subtask1.getId(), "ID подзадачи не очищен!");
+        assertEquals(-1, subtask1.getEpicId(), "ID эпика не очищен!");
+    }
+
+    @Test
+    public void cleaningUpOutdatedEpicSubtasks() {
+        Epic epic1 = new Epic("Эпик", "Описание эпика", Status.NEW, 1);
+        Subtask subtask1 = new Subtask("Сабтаск", "Описание сабтаска", Status.NEW, epic1);
+        Subtask subtask2 = new Subtask("Сабтаск", "Описание сабтаска", Status.NEW, epic1);
+
+        taskManager.addNewEpic(epic1);
+        taskManager.addNewSubtask(subtask1);
+        taskManager.addNewSubtask(subtask2);
+
+        assertEquals(2, epic1.getSubtasksId().size(), "Некорректное добавление элементов в список подзадач.");
+
+        taskManager.deleteSubtask(subtask1);
+
+        assertEquals(1, epic1.getSubtasksId().size(), "Некорректная очистка неактуальных элементов в списке подзадач.");
     }
 }

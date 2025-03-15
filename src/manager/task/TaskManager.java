@@ -1,10 +1,9 @@
-package manager;
+package manager.task;
 
 import model.Epic;
 import model.Subtask;
 import model.Task;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public interface TaskManager {

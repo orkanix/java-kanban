@@ -241,11 +241,9 @@ public class InMemoryTaskManager implements TaskManager {
 
         if (allNew) {
             epic.setStatus(Status.NEW);
-        }
-        else if (allDone) {
+        } else if (allDone) {
             epic.setStatus(Status.DONE);
-        }
-        else {
+        } else {
             epic.setStatus(Status.IN_PROGRESS);
         }
 

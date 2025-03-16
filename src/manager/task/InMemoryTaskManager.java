@@ -1,5 +1,7 @@
-package manager;
+package manager.task;
 
+import manager.Managers;
+import manager.history.HistoryManager;
 import model.*;
 
 import java.util.ArrayList;
@@ -33,20 +35,30 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Task getTask(int id) {
-        historyManager.add(tasks.get(id));
-        return tasks.get(id);
+        if (tasks.get(id) != null) {
+            historyManager.add(tasks.get(id));
+            return tasks.get(id);
+        }
+        return null;
     }
 
     @Override
     public Epic getEpic(int id) {
-        historyManager.add(epics.get(id));
-        return epics.get(id);
+        if (epics.get(id) != null) {
+            historyManager.add(epics.get(id));
+            return epics.get(id);
+        }
+        return null;
     }
 
     @Override
     public Subtask getSubtask(int id) {
-        historyManager.add(subtasks.get(id));
-        return subtasks.get(id);
+        if (subtasks.get(id) != null) {
+            historyManager.add(subtasks.get(id));
+            return subtasks.get(id);
+        }
+        return null;
+
     }
 
     @Override
@@ -94,6 +106,7 @@ public class InMemoryTaskManager implements TaskManager {
         tempEpic.getSubtasksId().add(subtask.getId());
         checkStatus(tempEpic);
         id++;
+        historyManager.remove(subtask.getEpicId());
 
         return id - 1;
     }
@@ -131,7 +144,6 @@ public class InMemoryTaskManager implements TaskManager {
             subtasks.put(id, subtask);
             checkStatus(getEpic(subtask.getEpicId()));
             System.out.println("Подзадача с id " + id + " обновлена.");
-            System.out.println(subtasks);
             return;
         }
 
@@ -144,6 +156,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void deleteTask(Task task) {
         if (tasks.containsKey(task.getId())) {
             tasks.remove(task.getId());
+            historyManager.remove(task.getId());
             System.out.println("Задача с id " + task.getId() + " удалена.");
             return;
         }
@@ -156,9 +169,11 @@ public class InMemoryTaskManager implements TaskManager {
         if (epics.containsKey(epic.getId())) {
             for (Integer key : epic.getSubtasksId()) {
                 subtasks.remove(key);
+                historyManager.remove(key);
             }
 
             epics.remove(epic.getId());
+            historyManager.remove(epic.getId());
             System.out.println("Эпик с id " + epic.getId() + ", а также его подзадачи удалены.");
             return;
         }
@@ -171,7 +186,10 @@ public class InMemoryTaskManager implements TaskManager {
         if (subtasks.containsKey(subtask.getId())) {
             getEpic(subtask.getEpicId()).deleteSubtask(subtask);
             subtasks.remove(subtask.getId());
+            historyManager.remove(subtask.getId());
             checkStatus(getEpic(subtask.getEpicId()));
+            subtask.setId(-1);
+            subtask.setEpicId(-1);
             return;
         }
 
@@ -180,17 +198,30 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteTasks() {
+        for (Integer i : tasks.keySet()) {
+            historyManager.remove(i);
+        }
         tasks.clear();
+        System.out.println(historyManager.getHistory());
     }
 
     @Override
     public void deleteEpics() {
+        for (Integer i : epics.keySet()) {
+            historyManager.remove(i);
+        }
+        for (Integer i : subtasks.keySet()) {
+            historyManager.remove(i);
+        }
         epics.clear();
         subtasks.clear();
     }
 
     @Override
     public void deleteSubtasks() {
+        for (Integer i : subtasks.keySet()) {
+            historyManager.remove(i);
+        }
         subtasks.clear();
         for (Epic epic : epics.values()) {
             epic.getSubtasksId().clear();
@@ -223,11 +254,9 @@ public class InMemoryTaskManager implements TaskManager {
 
         if (allNew) {
             epic.setStatus(Status.NEW);
-        }
-        else if (allDone) {
+        } else if (allDone) {
             epic.setStatus(Status.DONE);
-        }
-        else {
+        } else {
             epic.setStatus(Status.IN_PROGRESS);
         }
 

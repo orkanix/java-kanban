@@ -1,5 +1,5 @@
 import manager.Managers;
-import manager.TaskManager;
+import manager.task.TaskManager;
 import model.Epic;
 import model.Subtask;
 import model.Task;
@@ -15,63 +15,36 @@ public class Main {
         Task task1 = new Task("задача 1", "описание задачи 1", Status.NEW);
         Task task2 = new Task("задача 2", "описание задачи 2", Status.NEW);
 
+        Epic epic1 = new Epic("Эпик", "Описание эпика", Status.NEW);
+        Epic epic2 = new Epic("Эпик", "Описание эпика", Status.NEW);
+
         taskManager.addNewTask(task1);
         taskManager.addNewTask(task2);
-
-        Epic epic1 = new Epic("эпик 1", "описание эпика 1", Status.NEW);
-        Epic epic2 = new Epic("эпик 2", "описание эпика 2", Status.NEW);
-
         taskManager.addNewEpic(epic1);
         taskManager.addNewEpic(epic2);
 
+        Subtask subtask1 = new Subtask("Сабтаск", "Описание сабтаска", Status.NEW, epic1);
+        Subtask subtask2 = new Subtask("Сабтаск", "Описание сабтаска", Status.NEW, epic1);
+        Subtask subtask3 = new Subtask("Сабтаск", "Описание сабтаска", Status.NEW, epic1);
 
-        Subtask subtask1FE1 = new Subtask("подзадача 1 для эпика 1", "описание подзадачи", Status.NEW, epic1);
-        Subtask subtask2FE1 = new Subtask("подзадача 2 для эпика 1", "описание подзадачи", Status.NEW, epic1);
-        Subtask subtask1FE2 = new Subtask("подзадача 1 для эпика 2", "описание подзадачи", Status.NEW, epic2);
+        taskManager.addNewSubtask(subtask1);
+        taskManager.addNewSubtask(subtask2);
+        taskManager.addNewSubtask(subtask3);
 
-        taskManager.addNewSubtask(subtask1FE1);
-        taskManager.addNewSubtask(subtask2FE1);
-        taskManager.addNewSubtask(subtask1FE2);
-
-        System.out.println();
-        System.out.println("Эпики и сабтаски ДО изменения статусов:");
-        System.out.println(taskManager.getEpics());
-        System.out.println(taskManager.getSubtasks());
-
-        taskManager.updateSubtask(new Subtask("обновленный сабтаск 1 для эпика 1", "описание сабтаска", Status.DONE, epic1), 5);
-
-        System.out.println();
-        System.out.println(subtask1FE1.getStatus());
-
-        System.out.println();
-        System.out.println("Эпики и сабтаски ПОСЛЕ изменения статусов:");
-        System.out.println(taskManager.getEpics());
-        System.out.println(taskManager.getSubtasks());
-
-        taskManager.deleteTask(task1);
-        taskManager.deleteEpic(epic1);
-
-        taskManager.getTasks();
-        taskManager.getEpics();
-
-        System.out.println();
-        System.out.println("Задачи ПОСЛЕ удаления:");
-        System.out.println(taskManager.getTasks());
-        System.out.println(taskManager.getEpics());
-        System.out.println(taskManager.getSubtasks());
-
-        System.out.println();
-        System.out.println("Статус эпика ДО удаления подзадачи:");
-        System.out.println(epic1.getStatus());
-
-        taskManager.deleteSubtask(subtask1FE1);
-
-        System.out.println("Статус эпика ПОСЛЕ удаления подзадачи:");
-        System.out.println(epic1.getStatus());
-
-        taskManager.deleteSubtasks();
-
+        System.out.println("-------Сохраненный порядок истории------");
+        taskManager.getEpic(3);
+        taskManager.getTask(1);
+        taskManager.getEpic(4);
+        taskManager.getSubtask(6);
+        taskManager.getSubtask(5);
+        taskManager.getSubtask(7);
         System.out.println(taskManager.getHistory());
+        System.out.println("----------------------------------------");
+        System.out.println();
+        System.out.println("-------История после удаления эпика------");
+        taskManager.deleteEpic(epic1);
+        System.out.println(taskManager.getHistory());
+        System.out.println("------------------------------------------");
     }
 
 }

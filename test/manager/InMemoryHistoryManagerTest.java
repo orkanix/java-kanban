@@ -30,7 +30,6 @@ class InMemoryHistoryManagerTest {
         assertEquals(2, historyManager.getHistory().size());
     }
 
-    //проверка операции удаления
     @Test
     public void removeTheStoryOfTheList() {
         Task task1 = new Task("Заголовок", "Описание задачи", Status.NEW, 1);
@@ -44,5 +43,8 @@ class InMemoryHistoryManagerTest {
         historyManager.remove(2);
 
         assertEquals(2, historyManager.getHistory().size());
+        assertTrue(historyManager.getHistory().contains(task1));
+        assertTrue(historyManager.getHistory().contains(task3));
+        assertFalse(historyManager.getHistory().contains(task2));
     }
 }

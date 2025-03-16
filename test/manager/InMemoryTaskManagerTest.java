@@ -143,4 +143,35 @@ class InMemoryTaskManagerTest {
 
         assertEquals(1, epic1.getSubtasksId().size(), "Некорректная очистка неактуальных элементов в списке подзадач.");
     }
+
+    @Test
+    public void checkDeleteTasksInHistory() {
+        Task task1 = new Task("Заголовок", "Описание задачи", Status.NEW);
+        Task task2 = new Task("Заголовок", "Описание задачи", Status.NEW);
+        Task task3 = new Task("Заголовок", "Описание задачи", Status.NEW);
+        Epic epic1 = new Epic("Эпик", "Описание эпика", Status.NEW);
+
+        taskManager.addNewTask(task1);
+        taskManager.addNewTask(task2);
+        taskManager.addNewTask(task3);
+        taskManager.addNewEpic(epic1);
+
+        Subtask subtask1 = new Subtask("Сабтаск", "Описание сабтаска", Status.NEW, epic1);
+        Subtask subtask2 = new Subtask("Сабтаск", "Описание сабтаска", Status.NEW, epic1);
+
+        taskManager.addNewSubtask(subtask1);
+        taskManager.addNewSubtask(subtask2);
+
+        taskManager.getTask(1);
+        taskManager.getTask(2);
+        taskManager.getTask(3);
+        taskManager.getEpic(4);
+        taskManager.getSubtask(5);
+        taskManager.getSubtask(6);
+
+        taskManager.deleteEpics();
+
+        assertFalse(taskManager.getHistory().contains(subtask2));
+        assertTrue(taskManager.getHistory().contains(task1));
+    }
 }

@@ -83,7 +83,7 @@ public class InMemoryTaskManager implements TaskManager {
             return id - 1;
         }
         tasks.put(task.getId(), task);
-        id = task.getId()+1;
+        id = task.getId() + 1;
         return task.getId();
     }
 
@@ -96,7 +96,7 @@ public class InMemoryTaskManager implements TaskManager {
             return id - 1;
         }
         epics.put(epic.getId(), epic);
-        id = epic.getId()+1;
+        id = epic.getId() + 1;
         return epic.getId();
     }
 

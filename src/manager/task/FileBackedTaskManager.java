@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class FileBackedTaskManager extends InMemoryTaskManager implements TaskManager{
+public class FileBackedTaskManager extends InMemoryTaskManager implements TaskManager {
 
     private final String file;
     private final HashMap<Types, ArrayList<Task>> actualTasksList;

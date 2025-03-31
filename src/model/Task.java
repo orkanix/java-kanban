@@ -13,9 +13,6 @@ public class Task {
         this.name = name;
         this.description = description;
         this.status = status;
-
-        System.out.println("Задача " + name + " создана!");
-        System.out.println();
     }
 
     public Task(String name, String description, Status status, int id) {

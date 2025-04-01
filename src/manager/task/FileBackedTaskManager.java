@@ -9,8 +9,7 @@ import java.util.*;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
 
-    private final String HEADER = "id,type,name,status,description,epic";
-
+    private final String header = "id,type,name,status,description,epic";
     private final File file;
 
     public FileBackedTaskManager(File file) {
@@ -59,7 +58,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         List<Subtask> subtasks = super.getSubtasks();
 
         try (BufferedWriter dw = new BufferedWriter(new FileWriter(file, StandardCharsets.UTF_8))) {
-            dw.write(HEADER);
+            dw.write(header);
             dw.newLine();
             for (Task task : tasks) {
                 dw.write(getString(task));

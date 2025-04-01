@@ -5,116 +5,76 @@ import manager.exceptions.ManagerSaveException;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
-public class FileBackedTaskManager extends InMemoryTaskManager implements TaskManager {
+public class FileBackedTaskManager extends InMemoryTaskManager {
 
-    private final String file;
-    private final HashMap<Types, ArrayList<Task>> actualTasksList;
+    private final String HEADER = "id,type,name,status,description,epic";
 
-    public FileBackedTaskManager(String file) {
+    private final File file;
+
+    public FileBackedTaskManager(File file) {
         this.file = file;
-        this.actualTasksList = loadFromFile(new File(file));
-
-        if (actualTasksList.isEmpty()) {
-            return;
-        }
-
-        for (Task task : actualTasksList.get(Types.TASK)) {
-            addNewTask(task);
-        }
-        for (Task epic : actualTasksList.get(Types.EPIC)) {
-            addNewEpic((Epic) epic);
-        }
-        for (Task subtask : actualTasksList.get(Types.SUBTASK)) {
-            addNewSubtask((Subtask) subtask);
-        }
+        this.tasks = new HashMap<>();
+        this.epics = new HashMap<>();
+        this.subtasks = new HashMap<>();
     }
 
-    public static HashMap<Types, ArrayList<Task>> loadFromFile(File file) {
-        HashMap<Types, ArrayList<Task>> loadedMap = new HashMap<>();
+    public FileBackedTaskManager(File file, HashMap<Integer, Task> tasks, HashMap<Integer, Epic> epics, HashMap<Integer, Subtask> subtasks) {
+        this.file = file;
+        this.tasks = tasks;
+        this.epics = epics;
+        this.subtasks = subtasks;
+    }
+
+    public static FileBackedTaskManager loadFromFile(File file) {
+        HashMap<Integer, Task> tasks = new HashMap<>();
+        HashMap<Integer, Epic> epics = new HashMap<>();
+        HashMap<Integer, Subtask> subtasks = new HashMap<>();
+
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             br.readLine();
             while (br.ready()) {
                 Task task = taskFromString(br.readLine());
                 if (task instanceof Epic) {
-                    loadedMap.putIfAbsent(Types.EPIC, new ArrayList<>());
-                    loadedMap.get(Types.EPIC).add(task);
+                    epics.put(task.getId(), (Epic) task);
                 } else if (task instanceof Subtask) {
-                    loadedMap.putIfAbsent(Types.SUBTASK, new ArrayList<>());
-                    loadedMap.get(Types.SUBTASK).add(task);
+                    subtasks.put(task.getId(), (Subtask) task);
                 } else if (task instanceof Task) {
-                    loadedMap.putIfAbsent(Types.TASK, new ArrayList<>());
-                    loadedMap.get(Types.TASK).add(task);
+                    tasks.put(task.getId(), task);
                 }
             }
+            for (Subtask subtask : subtasks.values()) {
+                epics.get(subtask.getEpicId()).addSubtask(subtask);
+            }
+            return new FileBackedTaskManager(file, tasks, epics, subtasks);
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка при чтении данных", e);
         }
-        return loadedMap;
     }
 
-    public void save() {
+    private void save() {
         List<Task> tasks = super.getTasks();
         List<Epic> epics = super.getEpics();
         List<Subtask> subtasks = super.getSubtasks();
 
-        for (Task task : tasks) {
-            if (!actualTasksList.containsKey(Types.TASK)) {
-                actualTasksList.computeIfAbsent(Types.TASK, k -> new ArrayList<>());
-            }
-            if (!actualTasksList.get(Types.TASK).contains(task)) {
-                actualTasksList.get(Types.TASK).add(task);
-            }
-        }
-        for (Epic epic : epics) {
-            if (!actualTasksList.containsKey(Types.EPIC)) {
-                actualTasksList.computeIfAbsent(Types.EPIC, k -> new ArrayList<>());
-            }
-            if (!actualTasksList.get(Types.EPIC).contains(epic)) {
-                actualTasksList.get(Types.EPIC).add(epic);
-            }
-        }
-        for (Subtask subtask : subtasks) {
-            if (!actualTasksList.containsKey(Types.SUBTASK)) {
-                actualTasksList.computeIfAbsent(Types.SUBTASK, k -> new ArrayList<>());
-            }
-            if (!actualTasksList.get(Types.SUBTASK).contains(subtask)) {
-                actualTasksList.get(Types.SUBTASK).add(subtask);
-            }
-        }
-
         try (BufferedWriter dw = new BufferedWriter(new FileWriter(file, StandardCharsets.UTF_8))) {
-            dw.write("id,type,name,status,description,epic");
+            dw.write(HEADER);
             dw.newLine();
-            for (Types type : actualTasksList.keySet()) {
-                for (Task task : actualTasksList.get(type)) {
-                    if (task instanceof Epic) {
-                        dw.write(getString((Epic) task));
-                    } else if (task instanceof Subtask) {
-                        dw.write(getString((Subtask) task));
-                    } else if (task instanceof Task) {
-                        dw.write(getString(task));
-                    }
-                    dw.newLine();
-                }
+            for (Task task : tasks) {
+                dw.write(getString(task));
+                dw.newLine();
+            }
+            for (Epic epic : epics) {
+                dw.write(getString(epic));
+                dw.newLine();
+            }
+            for (Subtask subtask : subtasks) {
+                dw.write(getString(subtask));
+                dw.newLine();
             }
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка при сохранении данных!", e);
-        }
-    }
-
-    private static Status parseStatus(String statusStr) {
-        switch (statusStr) {
-            case "DONE":
-                return Status.DONE;
-            case "IN_PROGRESS":
-                return Status.IN_PROGRESS;
-            case "NEW":
-            default:
-                return Status.NEW;
         }
     }
 
@@ -125,7 +85,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         int id = Integer.parseInt(words[0]);
         String type = words[1];
         String name = words[2];
-        Status status = parseStatus(words[3]);
+        Status status = Status.valueOf(words[3]);
         String description = words[4];
 
         switch (type) {
@@ -134,7 +94,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
             case "EPIC":
                 return new Epic(name, description, status, id);
             case "SUBTASK":
-                return new Subtask(name, description, status, Integer.parseInt(words[5]));
+                return new Subtask(name, description, status, Integer.parseInt(words[5]), id);
             default:
                 return null;
         }

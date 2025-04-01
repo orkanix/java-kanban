@@ -10,11 +10,11 @@ import java.util.List;
 
 public class InMemoryTaskManager implements TaskManager {
 
-    private int id = 1;
+    protected int id = 1;
 
-    private final HashMap<Integer, Task> tasks = new HashMap<>();
-    private final HashMap<Integer, Epic> epics = new HashMap<>();
-    private final HashMap<Integer, Subtask> subtasks = new HashMap<>();
+    protected HashMap<Integer, Task> tasks = new HashMap<>();
+    protected HashMap<Integer, Epic> epics = new HashMap<>();
+    protected HashMap<Integer, Subtask> subtasks = new HashMap<>();
 
     HistoryManager historyManager = Managers.getDefaultHistory();
 
@@ -76,28 +76,20 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public int addNewTask(Task task) {
-        if (task.getId() == 0) {
-            task.setId(id);
-            tasks.put(id, task);
-            id++;
-            return id - 1;
-        }
-        tasks.put(task.getId(), task);
-        id = task.getId() + 1;
-        return task.getId();
+        task.setId(id);
+        tasks.put(id, task);
+        id++;
+
+        return id - 1;
     }
 
     @Override
     public int addNewEpic(Epic epic) {
-        if (epic.getId() == 0) {
-            epic.setId(id);
-            epics.put(id, epic);
-            id++;
-            return id - 1;
-        }
-        epics.put(epic.getId(), epic);
-        id = epic.getId() + 1;
-        return epic.getId();
+        epic.setId(id);
+        epics.put(id, epic);
+        id++;
+
+        return id - 1;
     }
 
     @Override

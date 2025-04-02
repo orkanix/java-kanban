@@ -14,61 +14,45 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     public FileBackedTaskManager(File file) {
         this.file = file;
-        this.tasks = new HashMap<>();
-        this.epics = new HashMap<>();
-        this.subtasks = new HashMap<>();
-    }
-
-    public FileBackedTaskManager(File file, HashMap<Integer, Task> tasks, HashMap<Integer, Epic> epics, HashMap<Integer, Subtask> subtasks) {
-        this.file = file;
-        this.tasks = tasks;
-        this.epics = epics;
-        this.subtasks = subtasks;
     }
 
     public static FileBackedTaskManager loadFromFile(File file) {
-        HashMap<Integer, Task> tasks = new HashMap<>();
-        HashMap<Integer, Epic> epics = new HashMap<>();
-        HashMap<Integer, Subtask> subtasks = new HashMap<>();
-
+        FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(file);
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             br.readLine();
             while (br.ready()) {
                 Task task = taskFromString(br.readLine());
                 if (task instanceof Epic) {
-                    epics.put(task.getId(), (Epic) task);
+                    fileBackedTaskManager.epics.put(task.getId(), (Epic) task);
                 } else if (task instanceof Subtask) {
-                    subtasks.put(task.getId(), (Subtask) task);
+                    fileBackedTaskManager.subtasks.put(task.getId(), (Subtask) task);
                 } else if (task instanceof Task) {
-                    tasks.put(task.getId(), task);
+                    fileBackedTaskManager.tasks.put(task.getId(), task);
                 }
             }
-            for (Subtask subtask : subtasks.values()) {
-                epics.get(subtask.getEpicId()).addSubtask(subtask);
+            for (Subtask subtask : fileBackedTaskManager.subtasks.values()) {
+                fileBackedTaskManager.epics.get(subtask.getEpicId()).addSubtask(subtask);
             }
-            return new FileBackedTaskManager(file, tasks, epics, subtasks);
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка при чтении данных", e);
         }
+        return fileBackedTaskManager;
     }
 
     private void save() {
-        List<Task> tasks = super.getTasks();
-        List<Epic> epics = super.getEpics();
-        List<Subtask> subtasks = super.getSubtasks();
-
+        //поменял логику и убрал лишние хранилища
         try (BufferedWriter dw = new BufferedWriter(new FileWriter(file, StandardCharsets.UTF_8))) {
             dw.write(header);
             dw.newLine();
-            for (Task task : tasks) {
+            for (Task task : getTasks()) {
                 dw.write(getString(task));
                 dw.newLine();
             }
-            for (Epic epic : epics) {
+            for (Epic epic : getEpics()) {
                 dw.write(getString(epic));
                 dw.newLine();
             }
-            for (Subtask subtask : subtasks) {
+            for (Subtask subtask : getSubtasks()) {
                 dw.write(getString(subtask));
                 dw.newLine();
             }

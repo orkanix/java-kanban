@@ -9,7 +9,7 @@ import java.util.*;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
 
-    private final String header = "id,type,name,status,description,epic";
+    private static final String HEADER = "id,type,name,status,description,epic";
     private final File file;
 
     public FileBackedTaskManager(File file) {
@@ -42,7 +42,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     private void save() {
         //поменял логику и убрал лишние хранилища
         try (BufferedWriter dw = new BufferedWriter(new FileWriter(file, StandardCharsets.UTF_8))) {
-            dw.write(header);
+            dw.write(HEADER);
             dw.newLine();
             for (Task task : getTasks()) {
                 dw.write(getString(task));

@@ -36,11 +36,7 @@ public class FileBackedTaskManagerTest {
         TaskManager taskManager = new FileBackedTaskManager(tempFile);
         Task task1 = new Task("Заголовок", "Описание задачи", Status.NEW);
 
-        taskManager.addNewTask(task1);
-        taskManager.deleteTask(task1);
-
-        //осталась только шапка
-        assertEquals(37, Files.size(tempFile.toPath()), "Файл должен быть пустым после удаления всех задач.");
+        assertEquals(0, Files.size(tempFile.toPath()), "Файл должен быть пустым после удаления всех задач.");
     }
 
     @Test

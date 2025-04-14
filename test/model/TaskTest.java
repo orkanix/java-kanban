@@ -1,7 +1,11 @@
 package model;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.Test;
+
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 class TaskTest {
 
@@ -24,5 +28,11 @@ class TaskTest {
         Subtask subtask2 = new Subtask("Сабтаск", "Описание сабтаска", Status.NEW, epic2);
 
         assertEquals(subtask1, subtask2, "Сабтаски не равны!");
+    }
+
+    @Test
+    public void checkCorrectEndTime() {
+        Task task1 = new Task("Заголовок", "Описание задачи", Status.NEW, 1, LocalDateTime.now(), Duration.ofMinutes(10));
+        System.out.println(task1);
     }
 }

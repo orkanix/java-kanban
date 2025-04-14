@@ -1,10 +1,15 @@
 package model;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class Epic extends Task {
 
-    private final ArrayList<Integer> subtasksId = new ArrayList<>();
+    private final HashMap<Integer, ArrayList<LocalDateTime>> subtasksIdTime = new HashMap<>();
+    private LocalDateTime endTime;
 
     public Epic(String name, String description, Status status) {
         super(name, description, status);
@@ -15,15 +20,53 @@ public class Epic extends Task {
     }
 
     public void addSubtask(Subtask subtask) {
-        subtasksId.add(subtask.getId());
+        subtasksIdTime.computeIfAbsent(subtask.getId(), k -> new ArrayList<>(List.of(subtask.getStartTime(), subtask.getEndTime())));
+        setStartTime();
+        setEndTime();
     }
 
-    public ArrayList<Integer> getSubtasksId() {
-        return subtasksId;
+    public HashMap<Integer, ArrayList<LocalDateTime>> getSubtasksId() {
+        return subtasksIdTime;
     }
 
     public void deleteSubtask(Subtask subtask) {
-        subtasksId.removeIf(i -> subtask.getId() == i);
+        subtasksIdTime.remove(subtask.getId());
+    }
+
+    private void setDuration() {
+        this.duration = Duration.between(startTime, endTime);
+    }
+
+    public void setStartTime() {
+        for (Integer id : subtasksIdTime.keySet()) {
+            LocalDateTime startTime = subtasksIdTime.get(id).getFirst();
+            if (this.startTime == null) {
+                this.startTime = startTime;
+                continue;
+            }
+            if (this.startTime.isAfter(startTime)) {
+                this.startTime = startTime;
+            }
+        }
+        if (this.startTime != null && this.endTime != null) {
+            setDuration();
+        }
+    }
+
+    public void setEndTime() {
+        for (Integer id : subtasksIdTime.keySet()) {
+            LocalDateTime endTime = subtasksIdTime.get(id).getLast();
+            if (this.endTime == null) {
+                this.endTime = endTime;
+                continue;
+            }
+            if (this.endTime.isBefore(endTime)) {
+                this.endTime = endTime;
+            }
+        }
+        if (this.startTime != null && this.endTime != null) {
+            setDuration();
+        }
     }
 
     @Override
@@ -33,7 +76,10 @@ public class Epic extends Task {
                 + "description='" + description + "', "
                 + "id=" + id + ", "
                 + "status='" + status + "', "
-                + "subtasks=" + subtasksId.size()
+                + "subtasks='" + subtasksIdTime.size() + "', "
+                + "duration=" + duration + ", "
+                + "startTime=" + startTime.format(TIME_FORMATTER) + ", "
+                + "endTime=" + endTime.format(TIME_FORMATTER)
                 + "}";
     }
 

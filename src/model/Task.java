@@ -1,18 +1,28 @@
 package model;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 public class Task {
+
+    static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
     protected String name;
     protected String description;
     protected int id;
     protected Status status;
 
+    protected Duration duration;
+    protected LocalDateTime startTime;
+
     public Task(String name, String description, Status status) {
         this.name = name;
         this.description = description;
         this.status = status;
+        this.startTime = null;
+        this.duration = null;
     }
 
     public Task(String name, String description, Status status, int id) {
@@ -20,17 +30,40 @@ public class Task {
         this.description = description;
         this.id = id;
         this.status = status;
+        this.startTime = null;
+        this.duration = null;
+    }
 
-        System.out.println("Задача " + name + " создана!");
+    public Task(String name, String description, Status status, LocalDateTime startTime, Duration duration) {
+        this.name = name;
+        this.description = description;
+        this.status = status;
+        this.startTime = startTime;
+        this.duration = duration;
+    }
+
+    public Task(String name, String description, Status status, int id, LocalDateTime startTime, Duration duration) {
+        this.name = name;
+        this.description = description;
+        this.id = id;
+        this.status = status;
+        this.startTime = startTime;
+        this.duration = duration;
     }
 
     @Override
     public String toString() {
+        String startTimeStr = (startTime != null) ? startTime.format(TIME_FORMATTER) : null;
+        String endTimeStr = (getEndTime() != null) ? getEndTime().format(TIME_FORMATTER) : null;
+
         return "model.Task={"
                 + "name='" + name + "', "
                 + "description='" + description + "', "
                 + "id=" + id + ", "
-                + "status='" + status
+                + "status='" + status + "', "
+                + "duration=" + duration + ", "
+                + "startTime=" + startTimeStr + ", "
+                + "endTime=" + endTimeStr
                 + "}";
     }
 
@@ -48,6 +81,10 @@ public class Task {
 
     public Status getStatus() {
         return status;
+    }
+
+    public Duration getDuration() {
+        return duration;
     }
 
     public void setStatus(Status status) {
@@ -70,14 +107,28 @@ public class Task {
 
     @Override
     public int hashCode() {
-        return  Objects.hash(id);
+        return Objects.hash(id);
     }
 
     public void setName(String name) {
         this.name = name;
     }
 
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public LocalDateTime getEndTime() {
+        if (startTime == null || duration == null) {
+            return null;
+        }
+        if (!(this instanceof Epic)) {
+            return startTime.plusMinutes(duration.toMinutes());
+        }
+        return startTime.plusMinutes(duration.toMinutes());
     }
 }

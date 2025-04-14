@@ -2,6 +2,7 @@ package manager;
 
 import manager.exceptions.ManagerSaveException;
 import manager.task.FileBackedTaskManager;
+import manager.task.InMemoryTaskManager;
 import manager.task.TaskManager;
 import model.Epic;
 import model.Status;
@@ -13,22 +14,29 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class FileBackedTaskManagerTest {
+public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
 
-    File tempFile;
+    File tempFile = File.createTempFile("taskManagerData", "csv");
 
-    @BeforeEach
-    public void beforeEach() throws IOException {
-        tempFile = File.createTempFile("taskManagerData", "csv");
+    public FileBackedTaskManagerTest() throws IOException {
+    }
+
+    @Override
+    protected FileBackedTaskManager createTaskManager() {
+        return new FileBackedTaskManager(tempFile);
+    }
+
+    @Test
+    public void cleanFile() throws IOException {
+        new FileOutputStream(tempFile).close();
     }
 
     @Test
@@ -42,9 +50,9 @@ public class FileBackedTaskManagerTest {
     @Test
     public void checkAddNewTasks() {
         TaskManager taskManager = FileBackedTaskManager.loadFromFile(tempFile);
-        Task task1 = new Task("Заголовок", "Описание задачи", Status.NEW);
-        Task task2 = new Task("Заголовок", "Описание задачи", Status.IN_PROGRESS);
-        Task task3 = new Task("Заголовок", "Описание задачи", Status.NEW);
+        Task task1 = new Task("Заголовок", "Описание задачи", Status.NEW, LocalDateTime.of(2020, 1, 20, 10, 55), Duration.ofMinutes(30));
+        Task task2 = new Task("Заголовок", "Описание задачи", Status.IN_PROGRESS, LocalDateTime.of(2020, 1, 20, 10, 55), Duration.ofMinutes(30));
+        Task task3 = new Task("Заголовок", "Описание задачи", Status.NEW, LocalDateTime.of(2020, 1, 20, 10, 55), Duration.ofMinutes(30));
         Epic epic1 = new Epic("Эпик", "Описание эпика", Status.NEW);
 
         taskManager.addNewTask(task1);
@@ -52,8 +60,8 @@ public class FileBackedTaskManagerTest {
         taskManager.addNewTask(task3);
         taskManager.addNewEpic(epic1);
 
-        Subtask subtask1 = new Subtask("Сабтаск", "Описание сабтаска", Status.NEW, epic1);
-        Subtask subtask2 = new Subtask("Сабтаск", "Описание сабтаска", Status.NEW, epic1);
+        Subtask subtask1 = new Subtask("Сабтаск", "Описание сабтаска", Status.NEW, epic1, LocalDateTime.of(2020, 1, 20, 10, 55), Duration.ofMinutes(30));
+        Subtask subtask2 = new Subtask("Сабтаск", "Описание сабтаска", Status.NEW, epic1, LocalDateTime.of(2020, 1, 20, 10, 55), Duration.ofMinutes(30));
 
         taskManager.addNewSubtask(subtask1);
         taskManager.addNewSubtask(subtask2);
@@ -83,9 +91,9 @@ public class FileBackedTaskManagerTest {
     public void checkLoadData() {
         TaskManager saveTaskManager = new FileBackedTaskManager(tempFile);
 
-        Task task1 = new Task("Заголовок", "Описание задачи", Status.NEW);
-        Task task2 = new Task("Заголовок", "Описание задачи", Status.IN_PROGRESS);
-        Task task3 = new Task("Заголовок", "Описание задачи", Status.NEW);
+        Task task1 = new Task("Заголовок", "Описание задачи", Status.NEW, LocalDateTime.of(2020, 1, 20, 10, 55), Duration.ofMinutes(30));
+        Task task2 = new Task("Заголовок", "Описание задачи", Status.IN_PROGRESS, LocalDateTime.of(2020, 1, 20, 10, 55), Duration.ofMinutes(30));
+        Task task3 = new Task("Заголовок", "Описание задачи", Status.NEW, LocalDateTime.of(2020, 1, 20, 10, 55), Duration.ofMinutes(30));
         Epic epic1 = new Epic("Эпик", "Описание эпика", Status.NEW);
 
         saveTaskManager.addNewTask(task1);
@@ -93,8 +101,8 @@ public class FileBackedTaskManagerTest {
         saveTaskManager.addNewTask(task3);
         saveTaskManager.addNewEpic(epic1);
 
-        Subtask subtask1 = new Subtask("Сабтаск", "Описание сабтаска", Status.NEW, epic1);
-        Subtask subtask2 = new Subtask("Сабтаск", "Описание сабтаска", Status.NEW, epic1);
+        Subtask subtask1 = new Subtask("Сабтаск", "Описание сабтаска", Status.NEW, epic1, LocalDateTime.of(2020, 1, 20, 10, 55), Duration.ofMinutes(30));
+        Subtask subtask2 = new Subtask("Сабтаск", "Описание сабтаска", Status.NEW, epic1, LocalDateTime.of(2020, 1, 20, 10, 55), Duration.ofMinutes(30));
 
         saveTaskManager.addNewSubtask(subtask1);
         saveTaskManager.addNewSubtask(subtask2);

@@ -27,12 +27,19 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     fileBackedTaskManager.epics.put(task.getId(), (Epic) task);
                 } else if (task instanceof Subtask) {
                     fileBackedTaskManager.subtasks.put(task.getId(), (Subtask) task);
+                    if (task.getStartTime() != null && task.getEndTime() != null && !(fileBackedTaskManager.checkOverlayTasks(task, fileBackedTaskManager.prioritizedTasks))) {
+                        fileBackedTaskManager.prioritizedTasks.add(task);
+                    }
                 } else if (task instanceof Task) {
                     fileBackedTaskManager.tasks.put(task.getId(), task);
+                    //добавить проверку на добавление в приоритетный список
+                    if (task.getStartTime() != null && task.getEndTime() != null && !(fileBackedTaskManager.checkOverlayTasks(task, fileBackedTaskManager.prioritizedTasks))) {
+                        fileBackedTaskManager.prioritizedTasks.add(task);
+                    }
                 }
             }
 
-            fileBackedTaskManager.subtasks.values().stream()
+            fileBackedTaskManager.subtasks.values()
                     .forEach(subtask -> fileBackedTaskManager.epics.get(subtask.getEpicId()).addSubtask(subtask));
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка при чтении данных", e);
@@ -57,21 +64,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 dw.write(getString(epic));
                 dw.newLine();
             }
-
-//            Stream.concat(
-//                            Stream.concat(getTasks().stream(), getSubtasks().stream()),
-//                            getEpics().stream()
-//                    )
-//                    .map(this::getString)
-//                    .filter(Objects::nonNull)
-//                    .forEach(taskString -> {
-//                        try {
-//                            dw.write(taskString);
-//                            dw.newLine();
-//                        } catch (IOException e) {
-//                            throw new UncheckedIOException(e);
-//                        }
-//                    });
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка при сохранении данных!", e);
         }
@@ -87,12 +79,12 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         String description = words[4];
         Duration duration;
         LocalDateTime startTime;
-        if (words[5] == null) {
+        if (words[5].equals("null")) {
             duration = null;
         } else {
             duration = Duration.parse(words[5]);
         }
-        if (words[6] == null) {
+        if (words[6].equals("null")) {
             startTime = null;
         } else {
             startTime = LocalDateTime.parse(words[6]);
@@ -102,7 +94,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             case "TASK":
                 return new Task(name, description, status, id, startTime, duration);
             case "EPIC":
-                return new Epic(name, description, status, id);
+                return new Epic(name, description, status, id, startTime, duration);
             case "SUBTASK":
                 return new Subtask(name, description, status, Integer.parseInt(words[8]), id, startTime, duration);
             default:

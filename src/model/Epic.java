@@ -3,12 +3,11 @@ package model;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class Epic extends Task {
 
-    private final HashMap<Integer, ArrayList<LocalDateTime>> subtasksIdTime = new HashMap<>();
+    private final List<Integer> subtasksId = new ArrayList<>();
     private LocalDateTime endTime;
 
     public Epic(String name, String description, Status status) {
@@ -19,54 +18,59 @@ public class Epic extends Task {
         super(name, description, status, id);
     }
 
-    public void addSubtask(Subtask subtask) {
-        subtasksIdTime.computeIfAbsent(subtask.getId(), k -> new ArrayList<>(List.of(subtask.getStartTime(), subtask.getEndTime())));
-        setStartTime();
-        setEndTime();
+    public Epic(String name, String description, Status status, int id, LocalDateTime startTime, Duration duration) {
+        super(name, description, status, id, startTime, duration);
     }
 
-    public HashMap<Integer, ArrayList<LocalDateTime>> getSubtasksId() {
-        return subtasksIdTime;
+    public void addSubtask(Subtask subtask) {
+        subtasksId.add(subtask.getId());
+        setStartTime(subtask);
+        setEndTime(subtask);
+    }
+
+    public List<Integer> getSubtasksId() {
+        return new ArrayList<>(subtasksId) {
+        };
+    }
+
+    public void clearSubtasks() {
+        this.subtasksId.clear();
+        this.startTime = null;
+        this.endTime = null;
     }
 
     public void deleteSubtask(Subtask subtask) {
-        subtasksIdTime.remove(subtask.getId());
+        subtasksId.remove(subtasksId.indexOf(subtask.getId()));
     }
 
-    private void setDuration() {
-        this.duration = Duration.between(startTime, endTime);
+    public void setDuration(Duration duration) {
+        this.duration = duration;
     }
 
-    public void setStartTime() {
-        for (Integer id : subtasksIdTime.keySet()) {
-            LocalDateTime startTime = subtasksIdTime.get(id).getFirst();
-            if (this.startTime == null) {
-                this.startTime = startTime;
-                continue;
-            }
-            if (this.startTime.isAfter(startTime)) {
-                this.startTime = startTime;
-            }
+    public void setStartTime(Subtask subtask) {
+        if (subtasksId.size() == 1) {
+            this.startTime = subtask.getStartTime();
         }
-        if (this.startTime != null && this.endTime != null) {
-            setDuration();
+        if (this.startTime == null || this.startTime.isAfter(subtask.getStartTime())) {
+            this.startTime = subtask.getStartTime();
         }
     }
 
-    public void setEndTime() {
-        for (Integer id : subtasksIdTime.keySet()) {
-            LocalDateTime endTime = subtasksIdTime.get(id).getLast();
-            if (this.endTime == null) {
-                this.endTime = endTime;
-                continue;
-            }
-            if (this.endTime.isBefore(endTime)) {
-                this.endTime = endTime;
-            }
+    public void setEndTime(Subtask subtask) {
+        if (subtasksId.size() == 1) {
+            this.endTime = subtask.getEndTime();
         }
-        if (this.startTime != null && this.endTime != null) {
-            setDuration();
+        if (this.endTime == null || this.endTime.isBefore(subtask.getEndTime())) {
+            this.endTime = subtask.getEndTime();
         }
+    }
+
+    @Override
+    public LocalDateTime getEndTime() {
+        if (startTime == null || duration == null) {
+            return null;
+        }
+        return startTime.plusMinutes(duration.toMinutes());
     }
 
     @Override
@@ -76,10 +80,10 @@ public class Epic extends Task {
                 + "description='" + description + "', "
                 + "id=" + id + ", "
                 + "status='" + status + "', "
-                + "subtasks='" + subtasksIdTime.size() + "', "
-                + "duration=" + duration + ", "
-                + "startTime=" + startTime.format(TIME_FORMATTER) + ", "
-                + "endTime=" + endTime.format(TIME_FORMATTER)
+                + "subtasks='" + subtasksId.size() + "', "
+                + "duration=" + (duration != null ? duration : null) + ", "
+                + "startTime=" + (startTime != null ? startTime.format(TIME_FORMATTER) : null) + ", "
+                + "endTime=" + (endTime != null ? endTime.format(TIME_FORMATTER) : null)
                 + "}";
     }
 

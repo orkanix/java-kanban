@@ -91,9 +91,9 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
     public void checkLoadData() {
         TaskManager saveTaskManager = new FileBackedTaskManager(tempFile);
 
-        Task task1 = new Task("Заголовок", "Описание задачи", Status.NEW, LocalDateTime.of(2020, 1, 20, 10, 55), Duration.ofMinutes(30));
+        Task task1 = new Task("Заголовок", "Описание задачи", Status.NEW, LocalDateTime.of(2021, 1, 20, 10, 55), Duration.ofMinutes(30));
         Task task2 = new Task("Заголовок", "Описание задачи", Status.IN_PROGRESS, LocalDateTime.of(2020, 1, 20, 10, 55), Duration.ofMinutes(30));
-        Task task3 = new Task("Заголовок", "Описание задачи", Status.NEW, LocalDateTime.of(2020, 1, 20, 10, 55), Duration.ofMinutes(30));
+        Task task3 = new Task("Заголовок", "Описание задачи", Status.NEW, LocalDateTime.of(2019, 1, 20, 10, 55), Duration.ofMinutes(30));
         Epic epic1 = new Epic("Эпик", "Описание эпика", Status.NEW);
 
         saveTaskManager.addNewTask(task1);
@@ -101,8 +101,8 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
         saveTaskManager.addNewTask(task3);
         saveTaskManager.addNewEpic(epic1);
 
-        Subtask subtask1 = new Subtask("Сабтаск", "Описание сабтаска", Status.NEW, epic1, LocalDateTime.of(2020, 1, 20, 10, 55), Duration.ofMinutes(30));
-        Subtask subtask2 = new Subtask("Сабтаск", "Описание сабтаска", Status.NEW, epic1, LocalDateTime.of(2020, 1, 20, 10, 55), Duration.ofMinutes(30));
+        Subtask subtask1 = new Subtask("Сабтаск", "Описание сабтаска", Status.NEW, epic1, LocalDateTime.of(2018, 1, 20, 10, 55), Duration.ofMinutes(30));
+        Subtask subtask2 = new Subtask("Сабтаск", "Описание сабтаска", Status.NEW, epic1, LocalDateTime.of(2017, 1, 20, 10, 55), Duration.ofMinutes(30));
 
         saveTaskManager.addNewSubtask(subtask1);
         saveTaskManager.addNewSubtask(subtask2);
@@ -113,17 +113,28 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
         assertEquals(saveTaskManager.getTask(1).getName(), loadTaskManager.getTask(1).getName());
         assertEquals(saveTaskManager.getTask(1).getDescription(), loadTaskManager.getTask(1).getDescription());
         assertEquals(saveTaskManager.getTask(1).getStatus(), loadTaskManager.getTask(1).getStatus());
+        assertEquals(saveTaskManager.getTask(1).getStartTime(), loadTaskManager.getTask(1).getStartTime());
+        assertEquals(saveTaskManager.getTask(1).getDuration(), loadTaskManager.getTask(1).getDuration());
+        assertEquals(saveTaskManager.getTask(1).getEndTime(), loadTaskManager.getTask(1).getEndTime());
 
         assertEquals(saveTaskManager.getEpic(4).getId(), loadTaskManager.getEpic(4).getId());
         assertEquals(saveTaskManager.getEpic(4).getName(), loadTaskManager.getEpic(4).getName());
         assertEquals(saveTaskManager.getEpic(4).getDescription(), loadTaskManager.getEpic(4).getDescription());
         assertEquals(saveTaskManager.getEpic(4).getStatus(), loadTaskManager.getEpic(4).getStatus());
         assertEquals(saveTaskManager.getEpic(4).getSubtasksId(), loadTaskManager.getEpic(4).getSubtasksId());
+        assertEquals(saveTaskManager.getEpic(4).getStartTime(), loadTaskManager.getEpic(4).getStartTime());
+        assertEquals(saveTaskManager.getEpic(4).getDuration(), loadTaskManager.getEpic(4).getDuration());
+        assertEquals(saveTaskManager.getEpic(4).getEndTime(), loadTaskManager.getEpic(4).getEndTime());
 
         assertEquals(saveTaskManager.getSubtask(5).getId(), loadTaskManager.getSubtask(5).getId());
         assertEquals(saveTaskManager.getSubtask(5).getName(), loadTaskManager.getSubtask(5).getName());
         assertEquals(saveTaskManager.getSubtask(5).getDescription(), loadTaskManager.getSubtask(5).getDescription());
         assertEquals(saveTaskManager.getSubtask(5).getStatus(), loadTaskManager.getSubtask(5).getStatus());
         assertEquals(saveTaskManager.getSubtask(5).getEpicId(), loadTaskManager.getSubtask(5).getEpicId());
+        assertEquals(saveTaskManager.getSubtask(5).getStartTime(), loadTaskManager.getSubtask(5).getStartTime());
+        assertEquals(saveTaskManager.getSubtask(5).getDuration(), loadTaskManager.getSubtask(5).getDuration());
+        assertEquals(saveTaskManager.getSubtask(5).getEndTime(), loadTaskManager.getSubtask(5).getEndTime());
+
+        assertEquals(saveTaskManager.getPrioritizedTasks(), loadTaskManager.getPrioritizedTasks());
     }
 }

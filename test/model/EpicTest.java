@@ -33,7 +33,7 @@ class EpicTest {
         assertEquals(epic1.getId(), subtask1.getEpicId());
 
         epic1.deleteSubtask(subtask1);
-        assertFalse(epic1.getSubtasksId().containsKey(subtask1.getId()));
+        assertFalse(epic1.getSubtasksId().contains(subtask1.getId()));
     }
 
     @Test

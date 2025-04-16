@@ -7,7 +7,7 @@ import java.util.Objects;
 
 public class Task {
 
-    static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
+    static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
 
     protected String name;
     protected String description;
@@ -125,9 +125,6 @@ public class Task {
     public LocalDateTime getEndTime() {
         if (startTime == null || duration == null) {
             return null;
-        }
-        if (!(this instanceof Epic)) {
-            return startTime.plusMinutes(duration.toMinutes());
         }
         return startTime.plusMinutes(duration.toMinutes());
     }

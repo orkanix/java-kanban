@@ -16,23 +16,16 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
 
-    TaskManager taskManager;
-
     @Override
     protected InMemoryTaskManager createTaskManager() {
         return (InMemoryTaskManager) Managers.getDefault();
-    }
-
-    @BeforeEach
-    public void beforeEach() {
-        taskManager = Managers.getDefault();
     }
 
     @Test
     public void correctEpicChangeStatusToInProgress() {
         Epic epic1 = new Epic("Эпик", "Описание эпика", Status.NEW, 1);
 
-        Subtask subtask11 = new Subtask("Сабтаск", "Описание сабтаска", Status.IN_PROGRESS, epic1.getId(), 10, LocalDateTime.of(2020, 1, 20, 10, 55), Duration.ofMinutes(10));
+        Subtask subtask11 = new Subtask("Сабтаск", "Описание сабтаска", Status.IN_PROGRESS, epic1.getId(), 10, LocalDateTime.of(2019, 1, 20, 10, 55), Duration.ofMinutes(10));
         Subtask subtask12 = new Subtask("Сабтаск", "Описание сабтаска", Status.IN_PROGRESS, epic1.getId(), 11, LocalDateTime.of(2020, 1, 20, 10, 55), Duration.ofMinutes(10));
 
         taskManager.addNewEpic(epic1);
@@ -60,8 +53,8 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
     @Test
     public void clearingTheIDsOfDeletedSubtasks() {
         Epic epic1 = new Epic("Эпик", "Описание эпика", Status.NEW, 1);
-        Subtask subtask1 = new Subtask("Сабтаск", "Описание сабтаска", Status.IN_PROGRESS, epic1.getId(), 3, LocalDateTime.of(2020, 1, 20, 10, 55), Duration.ofMinutes(10));
-        Subtask subtask2 = new Subtask("Сабтаск", "Описание сабтаска", Status.IN_PROGRESS, epic1.getId(), 3, LocalDateTime.of(2020, 1, 20, 10, 55), Duration.ofMinutes(10));
+        Subtask subtask1 = new Subtask("Сабтаск", "Описание сабтаска", Status.IN_PROGRESS, epic1.getId(), 3, LocalDateTime.of(2019, 1, 20, 10, 55), Duration.ofMinutes(10));
+        Subtask subtask2 = new Subtask("Сабтаск", "Описание сабтаска", Status.IN_PROGRESS, epic1.getId(), 4, LocalDateTime.of(2020, 1, 20, 10, 55), Duration.ofMinutes(10));
 
         taskManager.addNewEpic(epic1);
         taskManager.addNewSubtask(subtask1);
@@ -77,7 +70,7 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
     public void cleaningUpOutdatedEpicSubtasks() {
         Epic epic1 = new Epic("Эпик", "Описание эпика", Status.NEW, 1);
         Subtask subtask1 = new Subtask("Сабтаск", "Описание сабтаска", Status.IN_PROGRESS, epic1.getId(), 10, LocalDateTime.of(2020, 1, 20, 10, 55), Duration.ofMinutes(10));
-        Subtask subtask2 = new Subtask("Сабтаск", "Описание сабтаска", Status.IN_PROGRESS, epic1.getId(), 11, LocalDateTime.of(2020, 1, 20, 10, 55), Duration.ofMinutes(10));
+        Subtask subtask2 = new Subtask("Сабтаск", "Описание сабтаска", Status.IN_PROGRESS, epic1.getId(), 11, LocalDateTime.of(2019, 1, 20, 10, 55), Duration.ofMinutes(10));
 
         taskManager.addNewEpic(epic1);
         taskManager.addNewSubtask(subtask1);

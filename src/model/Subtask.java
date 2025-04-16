@@ -45,9 +45,9 @@ public class Subtask extends Task {
                 + "id=" + id + ", "
                 + "status='" + status + "', "
                 + "parent=" + epicId + ", "
-                + "duration=" + duration + ", "
-                + "startTime=" + startTime.format(TIME_FORMATTER) + ", "
-                + "endTime'" + getEndTime().format(TIME_FORMATTER)
+                + "duration=" + (duration != null ? duration : null) + ", "
+                + "startTime=" + (startTime != null ? startTime.format(TIME_FORMATTER) : null) + ", "
+                + "endTime=" + (startTime != null ? getEndTime().format(TIME_FORMATTER) : null)
                 + "}";
     }
 

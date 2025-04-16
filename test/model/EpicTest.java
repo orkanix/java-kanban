@@ -38,10 +38,15 @@ class EpicTest {
 
     @Test
     public void checkCorrectStartTimeAndEndTime() {
+        TaskManager taskManager = Managers.getDefault();
         Subtask subtask2 = new Subtask("Сабтаск", "Описание сабтаска", Status.NEW, epic1.getId(), 2, LocalDateTime.of(2020, 1, 20, 10, 55), Duration.ofMinutes(30));
-        epic1.addSubtask(subtask1);
-        epic1.addSubtask(subtask2);
+        taskManager.addNewEpic(epic1);
+        taskManager.addNewSubtask(subtask1);
+        taskManager.addNewSubtask(subtask2);
+
         System.out.println(epic1);
+        assertEquals(LocalDateTime.of(2020, 1, 20, 10, 55), epic1.getStartTime());
+        assertEquals(LocalDateTime.of(2020, 1, 20, 11, 5), epic1.getEndTime());
     }
 
     @Test
@@ -52,8 +57,6 @@ class EpicTest {
         Subtask subtask2 = new Subtask("Сабтаск", "Описание сабтаска", Status.NEW, epic1.getId(), 1, LocalDateTime.of(2020, 1, 20, 10, 55), Duration.ofMinutes(10));
 
         taskManager.addNewSubtask(subtask2);
-        epic1.addSubtask(subtask1);
-        epic1.addSubtask(subtask2);
 
         assertEquals(Status.NEW, epic1.getStatus());
     }
@@ -68,8 +71,6 @@ class EpicTest {
 
         taskManager.addNewSubtask(subtask2);
         taskManager.addNewSubtask(subtask3);
-        epic1.addSubtask(subtask2);
-        epic1.addSubtask(subtask3);
 
         assertEquals(Status.DONE, epic1.getStatus());
     }
@@ -84,8 +85,6 @@ class EpicTest {
 
         taskManager.addNewSubtask(subtask2);
         taskManager.addNewSubtask(subtask3);
-        epic1.addSubtask(subtask2);
-        epic1.addSubtask(subtask3);
 
         assertEquals(Status.IN_PROGRESS, epic1.getStatus());
     }
@@ -95,12 +94,10 @@ class EpicTest {
         TaskManager taskManager = Managers.getDefault();
         taskManager.addNewEpic(epic1);
 
-        Subtask subtask2 = new Subtask("Сабтаск", "Описание сабтаска", Status.DONE, epic1.getId(), 1, LocalDateTime.of(2020, 1, 20, 10, 55), Duration.ofMinutes(10));
+        Subtask subtask2 = new Subtask("Сабтаск", "Описание сабтаска", Status.DONE, epic1.getId(), 1, LocalDateTime.of(2021, 1, 20, 10, 55), Duration.ofMinutes(10));
 
         taskManager.addNewSubtask(subtask1);
         taskManager.addNewSubtask(subtask2);
-        epic1.addSubtask(subtask1);
-        epic1.addSubtask(subtask2);
 
         assertEquals(Status.IN_PROGRESS, epic1.getStatus());
     }

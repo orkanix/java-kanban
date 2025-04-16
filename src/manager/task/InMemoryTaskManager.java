@@ -182,7 +182,6 @@ public class InMemoryTaskManager implements TaskManager {
                 prioritizedTasks.remove(subtasks.get(subtask.getId()));
                 prioritizedTasks.add(subtask);
                 subtasks.put(id, subtask);
-                System.out.println("пересчитываю duration:");
                 checkDuration(epics.get(subtask.getEpicId()));
             } else if (subtask.getStartTime() == null && subtask.getEndTime() == null) {
                 subtasks.put(id, subtask);

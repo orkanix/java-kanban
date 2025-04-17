@@ -38,9 +38,6 @@ public class Epic extends Task {
 
     public void clearSubtasks() {
         this.subtasksId.clear();
-        this.startTime = null;
-        this.endTime = null;
-        this.duration = null;
     }
 
     public void deleteSubtask(Subtask subtask) {

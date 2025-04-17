@@ -113,4 +113,23 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
         assertFalse(taskManager.getHistory().contains(subtask2));
         assertTrue(taskManager.getHistory().contains(task1));
     }
+
+    @Test
+    public void test() {
+        Task task1 = new Task("Заголовок", "Описание задачи", Status.NEW, LocalDateTime.of(2020, 1, 20, 10, 55), Duration.ofMinutes(10));
+        Epic epic1 = new Epic("Эпик", "Описание эпика", Status.NEW);
+
+        taskManager.addNewTask(task1);
+        taskManager.addNewEpic(epic1);
+
+        Subtask subtask1 = new Subtask("Сабтаск", "Описание сабтаска", Status.IN_PROGRESS, epic1.getId(), 10, LocalDateTime.of(2020, 1, 20, 10, 55), Duration.ofMinutes(10));
+        Subtask subtask2 = new Subtask("Сабтаск", "Описание сабтаска", Status.IN_PROGRESS, epic1.getId(), 11, LocalDateTime.of(2020, 1, 20, 10, 55), Duration.ofMinutes(10));
+
+        taskManager.addNewSubtask(subtask1);
+        taskManager.addNewSubtask(subtask2);
+
+        taskManager.updateSubtask(new Subtask("Заголовок1", "Описание задачи", Status.NEW, epic1.getId(), 3, LocalDateTime.of(2021, 1, 20, 10, 55), Duration.ofMinutes(10)), 3);
+
+        System.out.println(taskManager.getSubtasks());
+    }
 }

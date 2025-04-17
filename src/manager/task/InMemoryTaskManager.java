@@ -109,7 +109,7 @@ public class InMemoryTaskManager implements TaskManager {
     public int addNewSubtask(Subtask subtask) {
         Epic tempEpic = getEpic(subtask.getEpicId());
         if (subtask.getStartTime() != null && subtask.getEndTime() != null) {
-            if (checkOverlayTasks(subtask, prioritizedTasks)) {
+            if (!(checkOverlayTasks(subtask, prioritizedTasks))) {
                 return -1;
             } else {
                 prioritizedTasks.add(subtask);
@@ -130,10 +130,11 @@ public class InMemoryTaskManager implements TaskManager {
         if (tasks.containsKey(task.getId())) {
             if (task.getStartTime() == null || task.getEndTime() == null) {
                 prioritizedTasks.remove(oldTask);
-            } else if (!(checkOverlayTasks(task, prioritizedTasks))) {
+            } else if (checkOverlayTasks(task, prioritizedTasks)) {
                 return;
             }
             tasks.put(task.getId(), task);
+            prioritizedTasks.add(task);
 
             System.out.println("Задача с id " + task.getId() + " обновлена.");
             return;
@@ -159,13 +160,15 @@ public class InMemoryTaskManager implements TaskManager {
     public void updateSubtask(Subtask subtask, int id) {
         Subtask oldSubtask = subtasks.get(id);
         if (subtasks.containsKey(id)) {
-            subtasks.put(id, subtask);
             if (subtask.getStartTime() == null || subtask.getEndTime() == null) {
                 prioritizedTasks.remove(oldSubtask);
             } else if (!(checkOverlayTasks(subtask, prioritizedTasks))) {
                 prioritizedTasks.add(subtask);
                 prioritizedTasks.remove(oldSubtask);
+            } else {
+                return;
             }
+            subtasks.put(id, subtask);
             checkEpicTime(epics.get(subtask.getEpicId()));
             checkStatus(epics.get(subtask.getEpicId()));
 

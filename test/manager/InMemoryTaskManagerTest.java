@@ -29,8 +29,8 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
         taskManager.addNewEpic(epic1);
         taskManager.addNewSubtask(subtask11);
         taskManager.addNewSubtask(subtask12);
-        taskManager.updateSubtask((new Subtask("обновленный сабтаск 1 для эпика 1", "описание сабтаска", Status.DONE, epic1.getId(), 2, LocalDateTime.of(2019, 1, 20, 10, 55), Duration.ofMinutes(10))), 2);
-        System.out.println(taskManager.getEpics());
+        taskManager.updateSubtask((new Subtask("обновленный сабтаск 1 для эпика 1", "описание сабтаска", Status.DONE, epic1.getId(), 2, LocalDateTime.of(2021, 1, 20, 10, 55), Duration.ofMinutes(10))), 2);
+        System.out.println(taskManager.getSubtasks());
         assertEquals(Status.IN_PROGRESS, epic1.getStatus(), "Неверно определен статус у эпика!");
     }
 
@@ -46,7 +46,7 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
         taskManager.addNewSubtask(subtask12);
         taskManager.updateSubtask(new Subtask("обновленный сабтаск 1 для эпика 1", "описание сабтаска", Status.DONE, epic1), 2);
         taskManager.updateSubtask(new Subtask("обновленный сабтаск 2 для эпика 1", "описание сабтаска", Status.DONE, epic1), 3);
-        System.out.println(taskManager.getSubtasks());
+
         assertEquals(Status.DONE, epic1.getStatus(), "Неверно определен статус у эпика!");
     }
 

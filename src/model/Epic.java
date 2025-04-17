@@ -22,10 +22,13 @@ public class Epic extends Task {
         super(name, description, status, id, startTime, duration);
     }
 
+    public Epic(String name, String description, Status status, int id, LocalDateTime startTime, Duration duration, LocalDateTime endTime) {
+        super(name, description, status, id, startTime, duration);
+        this.endTime = endTime;
+    }
+
     public void addSubtask(Subtask subtask) {
         subtasksId.add(subtask.getId());
-        setStartTime(subtask);
-        setEndTime(subtask);
     }
 
     public List<Integer> getSubtasksId() {
@@ -37,40 +40,15 @@ public class Epic extends Task {
         this.subtasksId.clear();
         this.startTime = null;
         this.endTime = null;
+        this.duration = null;
     }
 
     public void deleteSubtask(Subtask subtask) {
         subtasksId.remove(subtasksId.indexOf(subtask.getId()));
     }
 
-    public void setDuration(Duration duration) {
-        this.duration = duration;
-    }
-
-    public void setStartTime(Subtask subtask) {
-        if (subtasksId.size() == 1) {
-            this.startTime = subtask.getStartTime();
-        }
-        if (this.startTime == null || this.startTime.isAfter(subtask.getStartTime())) {
-            this.startTime = subtask.getStartTime();
-        }
-    }
-
-    public void setEndTime(Subtask subtask) {
-        if (subtasksId.size() == 1) {
-            this.endTime = subtask.getEndTime();
-        }
-        if (this.endTime == null || this.endTime.isBefore(subtask.getEndTime())) {
-            this.endTime = subtask.getEndTime();
-        }
-    }
-
-    @Override
-    public LocalDateTime getEndTime() {
-        if (startTime == null || duration == null) {
-            return null;
-        }
-        return startTime.plusMinutes(duration.toMinutes());
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
     }
 
     @Override

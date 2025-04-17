@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class InMemoryHistoryManagerTest {
-    //нет наследования потому что нет общих методов с TaskManager
 
     HistoryManager historyManager;
 

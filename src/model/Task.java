@@ -95,6 +95,14 @@ public class Task {
         this.id = id;
     }
 
+    public void setDuration(Duration duration) {
+        this.duration = duration;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;

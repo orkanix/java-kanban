@@ -1,12 +1,10 @@
 package manager;
 
 import manager.task.InMemoryTaskManager;
-import manager.task.TaskManager;
 import model.Epic;
 import model.Status;
 import model.Subtask;
 import model.Task;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
@@ -25,13 +23,14 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
     public void correctEpicChangeStatusToInProgress() {
         Epic epic1 = new Epic("Эпик", "Описание эпика", Status.NEW, 1);
 
-        Subtask subtask11 = new Subtask("Сабтаск", "Описание сабтаска", Status.IN_PROGRESS, epic1.getId(), 10, LocalDateTime.of(2019, 1, 20, 10, 55), Duration.ofMinutes(10));
-        Subtask subtask12 = new Subtask("Сабтаск", "Описание сабтаска", Status.IN_PROGRESS, epic1.getId(), 11, LocalDateTime.of(2020, 1, 20, 10, 55), Duration.ofMinutes(10));
+        Subtask subtask11 = new Subtask("Сабтаск", "Описание сабтаска", Status.IN_PROGRESS, epic1.getId(), 2, LocalDateTime.of(2019, 1, 20, 10, 55), Duration.ofMinutes(10));
+        Subtask subtask12 = new Subtask("Сабтаск", "Описание сабтаска", Status.IN_PROGRESS, epic1.getId(), 3, LocalDateTime.of(2020, 1, 20, 10, 55), Duration.ofMinutes(10));
 
         taskManager.addNewEpic(epic1);
         taskManager.addNewSubtask(subtask11);
         taskManager.addNewSubtask(subtask12);
-        taskManager.updateSubtask(new Subtask("обновленный сабтаск 1 для эпика 1", "описание сабтаска", Status.DONE, epic1), 2);
+        taskManager.updateSubtask((new Subtask("обновленный сабтаск 1 для эпика 1", "описание сабтаска", Status.DONE, epic1.getId(), 2, LocalDateTime.of(2019, 1, 20, 10, 55), Duration.ofMinutes(10))), 2);
+        System.out.println(taskManager.getEpics());
         assertEquals(Status.IN_PROGRESS, epic1.getStatus(), "Неверно определен статус у эпика!");
     }
 

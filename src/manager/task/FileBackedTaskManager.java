@@ -32,7 +32,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     }
                 } else if (task instanceof Task) {
                     fileBackedTaskManager.tasks.put(task.getId(), task);
-                    //добавить проверку на добавление в приоритетный список
                     if (task.getStartTime() != null && task.getEndTime() != null && !(fileBackedTaskManager.checkOverlayTasks(task, fileBackedTaskManager.prioritizedTasks))) {
                         fileBackedTaskManager.prioritizedTasks.add(task);
                     }
@@ -79,6 +78,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         String description = words[4];
         Duration duration;
         LocalDateTime startTime;
+        LocalDateTime endTime;
         if (words[5].equals("null")) {
             duration = null;
         } else {
@@ -89,12 +89,17 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         } else {
             startTime = LocalDateTime.parse(words[6]);
         }
+        if (words[7].equals("null")) {
+            endTime = null;
+        } else {
+            endTime = LocalDateTime.parse(words[7]);
+        }
 
         switch (type) {
             case "TASK":
                 return new Task(name, description, status, id, startTime, duration);
             case "EPIC":
-                return new Epic(name, description, status, id, startTime, duration);
+                return new Epic(name, description, status, id, startTime, duration, endTime);
             case "SUBTASK":
                 return new Subtask(name, description, status, Integer.parseInt(words[8]), id, startTime, duration);
             default:
@@ -136,8 +141,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public void updateTask(Task task) {
-        super.updateTask(task);
+    public void updateTask(Task task, int id) {
+        super.updateTask(task, id);
         save();
     }
 

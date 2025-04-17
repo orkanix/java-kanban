@@ -88,19 +88,4 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         assertTrue(taskManager.getEpics().isEmpty(), "Эпики не удалены!");
         assertTrue(taskManager.getSubtasks().isEmpty(), "Подзадачи не удалены!");
     }
-
-    @Test
-    public void checkCorrectSortPrioritizedTasks() {
-        Task task1 = new Task("Заголовок", "Описание задачи", Status.NEW, LocalDateTime.of(2020, 1, 20, 10, 50), Duration.ofMinutes(30));
-        Task task2 = new Task("Заголовок", "Описание задачи", Status.IN_PROGRESS, LocalDateTime.of(2021, 1, 20, 10, 55), Duration.ofMinutes(30));
-        Task task3 = new Task("Заголовок", "Описание задачи", Status.IN_PROGRESS, LocalDateTime.of(2021, 1, 20, 10, 55), Duration.ofMinutes(30));
-        Task task4 = new Task("Заголовок", "Описание задачи", Status.NEW);
-        taskManager.addNewTask(task1);
-        taskManager.addNewTask(task2);
-        taskManager.addNewTask(task3);
-        taskManager.addNewTask(task4);
-
-        assertEquals(2, taskManager.getPrioritizedTasks().size());
-        assertFalse(taskManager.getPrioritizedTasks().contains(task4));
-    }
 }

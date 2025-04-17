@@ -109,7 +109,7 @@ public class InMemoryTaskManager implements TaskManager {
     public int addNewSubtask(Subtask subtask) {
         Epic tempEpic = getEpic(subtask.getEpicId());
         if (subtask.getStartTime() != null && subtask.getEndTime() != null) {
-            if (checkOverlayTasks(subtask, prioritizedTasks)) {
+            if (!(checkOverlayTasks(subtask, prioritizedTasks))) {
                 return -1;
             } else {
                 prioritizedTasks.add(subtask);
@@ -130,7 +130,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (tasks.containsKey(task.getId())) {
             if (task.getStartTime() == null || task.getEndTime() == null) {
                 prioritizedTasks.remove(oldTask);
-            } else if (!(checkOverlayTasks(task, prioritizedTasks))) {
+            } else if (checkOverlayTasks(task, prioritizedTasks)) {
                 return;
             }
             tasks.put(task.getId(), task);

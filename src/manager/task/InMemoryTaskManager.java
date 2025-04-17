@@ -134,6 +134,7 @@ public class InMemoryTaskManager implements TaskManager {
                 return;
             }
             tasks.put(task.getId(), task);
+            prioritizedTasks.add(task);
 
             System.out.println("Задача с id " + task.getId() + " обновлена.");
             return;
@@ -159,13 +160,15 @@ public class InMemoryTaskManager implements TaskManager {
     public void updateSubtask(Subtask subtask, int id) {
         Subtask oldSubtask = subtasks.get(id);
         if (subtasks.containsKey(id)) {
-            subtasks.put(id, subtask);
             if (subtask.getStartTime() == null || subtask.getEndTime() == null) {
                 prioritizedTasks.remove(oldSubtask);
             } else if (!(checkOverlayTasks(subtask, prioritizedTasks))) {
                 prioritizedTasks.add(subtask);
                 prioritizedTasks.remove(oldSubtask);
+            } else {
+                return;
             }
+            subtasks.put(id, subtask);
             checkEpicTime(epics.get(subtask.getEpicId()));
             checkStatus(epics.get(subtask.getEpicId()));
 

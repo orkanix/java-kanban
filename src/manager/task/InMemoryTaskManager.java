@@ -109,7 +109,7 @@ public class InMemoryTaskManager implements TaskManager {
     public int addNewSubtask(Subtask subtask) {
         Epic tempEpic = getEpic(subtask.getEpicId());
         if (subtask.getStartTime() != null && subtask.getEndTime() != null) {
-            if (!(checkOverlayTasks(subtask, prioritizedTasks))) {
+            if (checkOverlayTasks(subtask, prioritizedTasks)) {
                 return -1;
             } else {
                 prioritizedTasks.add(subtask);

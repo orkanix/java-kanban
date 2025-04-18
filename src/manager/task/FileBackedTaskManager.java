@@ -153,8 +153,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public void updateSubtask(Subtask subtask, int id) {
-        super.updateSubtask(subtask, subtask.getId());
+    public void updateSubtask(Subtask subtask) {
+        super.updateSubtask(subtask);
         save();
     }
 

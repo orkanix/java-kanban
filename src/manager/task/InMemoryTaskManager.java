@@ -157,9 +157,9 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void updateSubtask(Subtask subtask, int id) {
-        Subtask oldSubtask = subtasks.get(id);
-        if (subtasks.containsKey(id)) {
+    public void updateSubtask(Subtask subtask) {
+        Subtask oldSubtask = subtasks.get(subtask.getId());
+        if (subtasks.containsKey(subtask.getId())) {
             if (subtask.getStartTime() == null || subtask.getEndTime() == null) {
                 prioritizedTasks.remove(oldSubtask);
             } else if (!(checkOverlayTasks(subtask, prioritizedTasks))) {
@@ -168,11 +168,11 @@ public class InMemoryTaskManager implements TaskManager {
             } else {
                 return;
             }
-            subtasks.put(id, subtask);
+            subtasks.put(subtask.getId(), subtask);
             checkEpicTime(epics.get(subtask.getEpicId()));
             checkStatus(epics.get(subtask.getEpicId()));
 
-            System.out.println("Подзадача с id " + id + " обновлена.");
+            System.out.println("Подзадача с id " + subtask.getId() + " обновлена.");
             return;
         }
 
@@ -246,7 +246,6 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteEpics() {
         epics.values().forEach(epic -> {
-            prioritizedTasks.remove(epic);
             historyManager.remove(epic.getId());
         });
 

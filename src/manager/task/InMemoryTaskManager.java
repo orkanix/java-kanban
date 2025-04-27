@@ -125,39 +125,41 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void updateTask(Task task) {
+    public int updateTask(Task task) {
         Task oldTask = tasks.get(task.getId());
         if (tasks.containsKey(task.getId())) {
             if (task.getStartTime() == null || task.getEndTime() == null) {
                 prioritizedTasks.remove(oldTask);
             } else if (checkOverlayTasks(task, prioritizedTasks)) {
-                return;
+                return -2;
             }
             tasks.put(task.getId(), task);
             prioritizedTasks.add(task);
 
             System.out.println("Задача с id " + task.getId() + " обновлена.");
-            return;
+            return 1;
         }
 
         System.out.println("Задача с id " + task.getId() + " не найдена.");
+        return -1;
     }
 
     @Override
-    public void updateEpic(Epic epic) {
+    public int updateEpic(Epic epic) {
         if (epics.containsKey(epic.getId())) {
             Epic epicInMemory = epics.get(epic.getId());
             epicInMemory.setName(epic.getName());
             epicInMemory.setDescription(epic.getDescription());
             System.out.println("Эпик с id " + epic.getId() + " обновлен.");
-            return;
+            return 0;
         }
 
         System.out.println("Эпик с id " + epic.getId() + " не найден.");
+        return -1;
     }
 
     @Override
-    public void updateSubtask(Subtask subtask) {
+    public int updateSubtask(Subtask subtask) {
         Subtask oldSubtask = subtasks.get(subtask.getId());
         if (subtasks.containsKey(subtask.getId())) {
             if (subtask.getStartTime() == null || subtask.getEndTime() == null) {
@@ -166,17 +168,18 @@ public class InMemoryTaskManager implements TaskManager {
                 prioritizedTasks.add(subtask);
                 prioritizedTasks.remove(oldSubtask);
             } else {
-                return;
+                return -2;
             }
             subtasks.put(subtask.getId(), subtask);
             checkEpicTime(epics.get(subtask.getEpicId()));
             checkStatus(epics.get(subtask.getEpicId()));
 
             System.out.println("Подзадача с id " + subtask.getId() + " обновлена.");
-            return;
+            return 1;
         }
 
         System.out.println("Подзадача с id " + subtask.getId() + " не найдена.");
+        return -1;
     }
 
 
@@ -240,7 +243,6 @@ public class InMemoryTaskManager implements TaskManager {
         });
 
         tasks.clear();
-        System.out.println(historyManager.getHistory());
     }
 
     @Override

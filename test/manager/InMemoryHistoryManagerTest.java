@@ -1,10 +1,16 @@
 package manager;
 
 import manager.history.HistoryManager;
+import manager.task.TaskManager;
+import model.Epic;
 import model.Status;
+import model.Subtask;
 import model.Task;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -100,5 +106,18 @@ class InMemoryHistoryManagerTest {
         assertTrue(historyManager.getHistory().contains(task1));
         assertTrue(historyManager.getHistory().contains(task2));
         assertFalse(historyManager.getHistory().contains(task3));
+    }
+
+    @Test
+    public void test() {
+        TaskManager taskManager = Managers.getDefault();
+        Epic epic1 = new Epic("Эпик", "Описание эпика", Status.NEW, 1);
+        Subtask subtask1 = new Subtask("Сабтаск", "Описание сабтаска", Status.IN_PROGRESS, epic1.getId(), 2, LocalDateTime.of(2020, 1, 20, 10, 55), Duration.ofMinutes(10));
+
+        taskManager.addNewEpic(epic1);
+        System.out.println(taskManager.getEpics());
+        taskManager.addNewSubtask(subtask1);
+
+        assertEquals(subtask1, taskManager.getEpicSubtasks(epic1.getId()).getFirst(), "Некорректное получание сабтаска!");
     }
 }

@@ -2,7 +2,6 @@ package manager;
 
 import manager.exceptions.ManagerSaveException;
 import manager.task.FileBackedTaskManager;
-import manager.task.InMemoryTaskManager;
 import manager.task.TaskManager;
 import model.Epic;
 import model.Status;
@@ -11,7 +10,6 @@ import model.Task;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
@@ -19,7 +17,6 @@ import java.nio.file.Files;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {

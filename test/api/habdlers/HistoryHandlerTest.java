@@ -1,0 +1,62 @@
+package api.habdlers;
+
+import api.ApiTestMethods;
+import api.HttpTaskServer;
+import manager.Managers;
+import manager.task.TaskManager;
+import model.Status;
+import model.Task;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import java.io.IOException;
+import java.net.http.HttpResponse;
+import java.util.Arrays;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+class HistoryHandlerTest extends ApiTestMethods {
+
+    TaskManager taskManager = Managers.getDefault();
+    HttpTaskServer httpTaskServer = new HttpTaskServer(taskManager);
+
+    HistoryHandlerTest() throws IOException {
+    }
+
+    @BeforeEach
+    public void beforeEach() {
+        taskManager.deleteTasks();
+        taskManager.deleteSubtasks();
+        taskManager.deleteEpics();
+        httpTaskServer.start();
+    }
+
+    @AfterEach
+    public void afterEach() {
+        httpTaskServer.stop();
+    }
+
+    @Test
+    public void checkGetHistory() throws IOException, InterruptedException {
+        Task task1 = new Task("Задача 1", "Описание задачи 1", Status.NEW);
+        Task task2 = new Task("Задача 2", "Описание задачи 2", Status.NEW);
+        addTask(task1);
+        addTask(task2);
+        getTask(1);
+        getTask(2);
+        HttpResponse<String> response = getHistory();
+
+        Task[] tasks = gson.fromJson(response.body(), Task[].class);
+
+        boolean taskFound = Arrays.stream(tasks)
+                .allMatch(task ->
+                        Arrays.stream(tasks)
+                                .anyMatch(t -> taskEquals(t, task))
+                );
+
+        assertTrue(taskFound, "Задача не найдена в ответе GET-запроса");
+        assertEquals(2, tasks.length, "Неверное количество записей в истории");
+        assertEquals(200, response.statusCode());
+    }
+}

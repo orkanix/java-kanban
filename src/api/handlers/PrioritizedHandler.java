@@ -15,6 +15,8 @@ public class PrioritizedHandler extends BaseHttpHandler {
     public void handle(HttpExchange httpExchange) throws IOException {
         if (httpExchange.getRequestMethod().equals("GET")) {
             sendText(httpExchange, gson.toJson(taskManager.getPrioritizedTasks()));
+            return;
         }
+        sendNotFound(httpExchange, gson.toJson("Такого эндпоинта не существует"));
     }
 }

@@ -1,12 +1,11 @@
-package api.habdlers;
+package api.handlers;
 
 import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 import manager.task.TaskManager;
 
 import java.io.IOException;
 
-public class PrioritizedHandler extends BaseHttpHandler implements HttpHandler {
+public class PrioritizedHandler extends BaseHttpHandler {
 
     public PrioritizedHandler(TaskManager taskManager) {
         super(taskManager);
@@ -14,6 +13,8 @@ public class PrioritizedHandler extends BaseHttpHandler implements HttpHandler {
 
     @Override
     public void handle(HttpExchange httpExchange) throws IOException {
-        sendText(httpExchange, gson.toJson(taskManager.getPrioritizedTasks()));
+        if (httpExchange.getRequestMethod().equals("GET")) {
+            sendText(httpExchange, gson.toJson(taskManager.getPrioritizedTasks()));
+        }
     }
 }

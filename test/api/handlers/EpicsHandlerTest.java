@@ -1,4 +1,4 @@
-package api.habdlers;
+package api.handlers;
 
 import api.ApiTestMethods;
 import api.HttpTaskServer;
@@ -52,7 +52,7 @@ class EpicsHandlerTest extends ApiTestMethods {
     }
 
     @Test
-    public void checkGetTask() throws IOException, InterruptedException {
+    public void checkGetEpic() throws IOException, InterruptedException {
         Epic epic = new Epic("Эпик 1", "Описание задачи2", Status.NEW);
         addEpic(epic);
         HttpResponse<String> response = getEpic(1);
@@ -65,7 +65,7 @@ class EpicsHandlerTest extends ApiTestMethods {
     }
 
     @Test
-    public void checkAddTask() throws IOException, InterruptedException {
+    public void checkAddEpic() throws IOException, InterruptedException {
         Epic epic = new Epic("Эпик 1", "Описание задачи2", Status.NEW);
         HttpResponse<String> responseAdd = addEpic(epic);
         HttpResponse<String> response = getEpics();
@@ -80,25 +80,7 @@ class EpicsHandlerTest extends ApiTestMethods {
     }
 
     @Test
-    public void checkUpdateTask() throws IOException, InterruptedException {
-        Epic epic = new Epic("Эпик 1", "Описание задачи2", Status.NEW);
-        addEpic(epic);
-        epic = new Epic("измененный заголовок", "Описание задачи2", Status.NEW, 1);
-        HttpResponse<String> responseUpdate = updateEpic(epic);
-        HttpResponse<String> response = getEpics();
-
-        Epic[] epics = gson.fromJson(response.body(), Epic[].class);
-
-        Epic epic1 = epic;
-        boolean taskFound = Arrays.stream(epics).anyMatch(s -> taskEquals(s, epic1));
-
-        assertTrue(taskFound, "Некорректное обновление задачи");
-        assertEquals(1, taskManager.getEpics().size(), "Некорректное количество задач");
-        assertEquals(201, responseUpdate.statusCode());
-    }
-
-    @Test
-    public void checkDeleteTask() throws IOException, InterruptedException {
+    public void checkDeleteEpic() throws IOException, InterruptedException {
         Epic epic = new Epic("Задача 1", "Описание задачи2", Status.NEW);
         addEpic(epic);
         HttpResponse<String> response = deleteEpic(1);

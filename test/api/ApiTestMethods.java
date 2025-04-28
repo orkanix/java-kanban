@@ -73,6 +73,19 @@ public class ApiTestMethods {
         return httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
     }
 
+    public HttpResponse<String> addTask() throws IOException, InterruptedException {
+        URI uri = URI.create(TASKS_PATH);
+
+        HttpRequest httpRequest = HttpRequest.newBuilder()
+                .POST(HttpRequest.BodyPublishers.ofString(""))
+                .uri(uri)
+                .header("Accept", "application/json")
+                .build();
+
+        HttpClient httpClient = HttpClient.newHttpClient();
+        return httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+    }
+
     public HttpResponse<String> updateTask(Task task) throws IOException, InterruptedException {
         URI uri = URI.create(TASKS_PATH);
 
@@ -131,6 +144,19 @@ public class ApiTestMethods {
 
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(subtask)))
+                .uri(uri)
+                .header("Accept", "application/json")
+                .build();
+
+        HttpClient httpClient = HttpClient.newHttpClient();
+        return httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+    }
+
+    public HttpResponse<String> addSubtask() throws IOException, InterruptedException {
+        URI uri = URI.create(SUBTASKS_PATH);
+
+        HttpRequest httpRequest = HttpRequest.newBuilder()
+                .POST(HttpRequest.BodyPublishers.ofString(""))
                 .uri(uri)
                 .header("Accept", "application/json")
                 .build();
@@ -210,6 +236,19 @@ public class ApiTestMethods {
 
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(epic)))
+                .uri(uri)
+                .header("Accept", "application/json")
+                .build();
+
+        HttpClient httpClient = HttpClient.newHttpClient();
+        return httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+    }
+
+    public HttpResponse<String> addEpic() throws IOException, InterruptedException {
+        URI uri = URI.create(EPICS_PATH);
+
+        HttpRequest httpRequest = HttpRequest.newBuilder()
+                .POST(HttpRequest.BodyPublishers.ofString(""))
                 .uri(uri)
                 .header("Accept", "application/json")
                 .build();

@@ -1,4 +1,4 @@
-package api.habdlers;
+package api.handlers;
 
 import api.ApiTestMethods;
 import api.HttpTaskServer;
@@ -50,8 +50,6 @@ class PrioritizedHandlerTest extends ApiTestMethods {
         HttpResponse<String> response = getPrioritized();
 
         Task[] tasks = gson.fromJson(response.body(), Task[].class);
-
-        System.out.println(taskManager.getPrioritizedTasks());
 
         boolean taskFound = Arrays.stream(tasks)
                 .allMatch(task ->

@@ -1,7 +1,6 @@
-package api.habdlers;
+package api.handlers;
 
 import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 import manager.task.TaskManager;
 import model.Task;
 
@@ -9,7 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
-public class TasksHandler extends BaseHttpHandler implements HttpHandler {
+public class TasksHandler extends BaseHttpHandler {
 
     public TasksHandler(TaskManager taskManager) {
         super(taskManager);
@@ -17,13 +16,13 @@ public class TasksHandler extends BaseHttpHandler implements HttpHandler {
 
     @Override
     public void handle(HttpExchange httpExchange) throws IOException {
-        Endpoint endpoint = getEndpoint(httpExchange);
+        Endpoints endpoint = getEndpoint(httpExchange);
 
         switch (endpoint) {
-            case Endpoint.GET_ALL -> handleGetTasks(httpExchange);
-            case Endpoint.GET_ID -> handleGetTask(httpExchange);
-            case Endpoint.POST_CREATE -> handleAddTask(httpExchange);
-            case Endpoint.DELETE_ID -> handleDeleteTask(httpExchange);
+            case Endpoints.GET_ALL -> handleGetTasks(httpExchange);
+            case Endpoints.GET_ID -> handleGetTask(httpExchange);
+            case Endpoints.POST_CREATE -> handleAddTask(httpExchange);
+            case Endpoints.DELETE_ID -> handleDeleteTask(httpExchange);
             default -> sendNotFound(httpExchange, gson.toJson("Такого эндпоинта не существует"));
         }
     }
@@ -52,6 +51,11 @@ public class TasksHandler extends BaseHttpHandler implements HttpHandler {
     public void handleAddTask(HttpExchange exchange) throws IOException {
         InputStream inputStream = exchange.getRequestBody();
         String requestBody = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+
+        if (requestBody.isBlank()) {
+            sendNotFound(exchange, gson.toJson(null));
+            return;
+        }
 
         try {
             Task task = gson.fromJson(requestBody, Task.class);
@@ -102,30 +106,22 @@ public class TasksHandler extends BaseHttpHandler implements HttpHandler {
         }
     }
 
-    private Endpoint getEndpoint(HttpExchange exchange) {
+    private Endpoints getEndpoint(HttpExchange exchange) {
         String[] pathParts = exchange.getRequestURI().getPath().split("/");
 
         if (pathParts.length == 2 && exchange.getRequestMethod().equals("GET")) {
-            return Endpoint.GET_ALL;
+            return Endpoints.GET_ALL;
         }
         if (pathParts.length == 2 && exchange.getRequestMethod().equals("POST")) {
-            return Endpoint.POST_CREATE;
+            return Endpoints.POST_CREATE;
         }
         if (pathParts.length == 3 && exchange.getRequestMethod().equals("GET")) {
-            return Endpoint.GET_ID;
+            return Endpoints.GET_ID;
         }
         if (pathParts.length == 3 && exchange.getRequestMethod().equals("DELETE")) {
-            return Endpoint.DELETE_ID;
+            return Endpoints.DELETE_ID;
         }
 
-        return Endpoint.UNKNOWN;
-    }
-
-    enum Endpoint {
-        GET_ALL,
-        GET_ID,
-        POST_CREATE,
-        DELETE_ID,
-        UNKNOWN
+        return Endpoints.UNKNOWN;
     }
 }
